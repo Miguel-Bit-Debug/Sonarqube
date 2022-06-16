@@ -1,0 +1,34 @@
+image: mcr.microsoft.com/dotnet/sdk:5.0
+
+variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0" 
+
+before_script:
+    - "dotnet restore"   
+
+stages:
+    - sonarqube
+
+sonarqube-check:
+  stage: sonarqube
+  script: 
+      - "apt-get update"
+      - "apt-get install --yes openjdk-11-jre"
+      - "dotnet tool install --global dotnet-sonarscanner"
+      - "dotnet tool install --global coverlet.console"
+      - "export PATH=\"$PATH:$HOME/.dotnet/tools\""
+      
+      - "dotnet test --verbosity minimal --collect:\"XPlat Code Coverage\" "
+
+      - "dotnet sonarscanner begin /k:\"DemoAPI\" \
+            /d:sonar.login=\"$SONAR_TOKEN\" \
+            /d:sonar.host.url=\"$SONAR_HOST_URL\" 
+            /d:sonar.tests=\"./Tests/**/*.*\" \
+            /d:sonar.coverage.exclusions=\"./Tests/**\" \
+            /d:sonar.cs.opencover.reportsPaths=\"./Tests/**/coverage.cobertura.xml\" "
+      - "dotnet build"
+      - "dotnet sonarscanner end /d:sonar.login=\"$SONAR_TOKEN\""
+
+  only:
+    - main
