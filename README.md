@@ -103,7 +103,6 @@ Após o login será necessário trocar a senha
 - É importante que a opção (Enable shared runners for this project) esteja desabilitada
 - ![images.png](.attachments/config_runner3.png)
 
-
 - Mova o executável para C: e excute os comandos - Se aparecer acesso negado, execute o gitlab-runner como admin
 - ![images.png](.attachments/config_runner.png)
 
